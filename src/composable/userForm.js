@@ -31,7 +31,7 @@ const userForm = () => {
 
             return data
         } catch (error) {
-            return new Error(error)
+            return new Error(error.message)
         }
 
 

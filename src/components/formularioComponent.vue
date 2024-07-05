@@ -156,14 +156,15 @@
                         <option value="3"> FRACCION lll. Permiso 8 dias hábiles con goce de salario</option>
                         <option value="4"> FRACCION lV. Permiso por motivos personales</option>
                         <option value="5"> FRACCION V. Permiso ecónomico durante bel ciclo escolar</option>
-                        <option value="6"> FRACCION Vl. Permiso o licencia para asistir a seminarios, foros, congresos</option>
+                        <option value="6"> FRACCION Vl. Permiso o licencia para asistir a seminarios, foros, congresos
+                        </option>
                         <option value="7"> Otro motivo</option>
                     </select>
                 </div>
 
                 <div v-if="idMotivo === '7'">
                     <label for="otroMotivo">Escribe el motivo del permiso: </label>
-                    <textarea name="" id="" cols="0" rows="5"  v-model="FraClausula"></textarea>
+                    <textarea name="" id="" cols="0" rows="5" v-model="FraClausula"></textarea>
                 </div>
 
                 <div>
@@ -195,7 +196,7 @@ export default {
             masdiasPermiso: '',
             fechaInicio: '',
             fechaFin: '',
-        })        
+        })
 
         const setValuesVoid = () => {
             permiso.value.fechaPermiso = ''
@@ -228,19 +229,24 @@ export default {
 
 
                 // Hacemos envio de datos a la api para generarPDF           
-                const resp = await generarPDF(nombre, plaza, codigo.value, idMotivo.value, FraClausula.value, permiso.value, tipoPermiso.value, masDias.value)
+                const resp = await generarPDF(nombre, plaza, codigo.value, idMotivo.value, FraClausula.value, permiso.value, tipoPermiso.value, masDias.value)                
 
-                const {ok, body} = resp
-                if (!ok) {
+                const { data } = resp
+                
+                if(!data) {
                     return Swal.fire('Error', `Revisa bien los datos proporcionados ${resp}`, 'error')
+                }
+                if (data.ok == false) {
+                    return Swal.fire('Error', `Revisa bien los datos proporcionados ${data.body}`, 'error')
                 }
 
 
-                Swal.fire('Guardado', `Tu solicitud ha sido procedada con éxito ${body.nombreTemp}`, 'success')
+                Swal.fire('Guardado', `Tu solicitud ha sido procesada con éxito ${data.body.nombreTemp}`, 'success')
             } catch (error) {
-                return Swal.fire('Error', error.message, 'error')
+                return Swal.fire('Error', `Error inesperado ${error.message}`, 'error')               
             }
         }
+
 
 
 
