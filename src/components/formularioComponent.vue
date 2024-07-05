@@ -151,13 +151,12 @@
                 <div id="motivoPermiso">
                     <label for="horas">Motivo del Permiso: </label>
                     <select name="horas" id="horas" v-model="idMotivo">
-                        <option value="1"> FRACCION l. Incapacidad medica (IMSS)</option>
-                        <option value="2"> FRACCION ll. Permiso 4 dias con goce de salario</option>
-                        <option value="3"> FRACCION lll. Permiso 8 dias habiles con goce de salario</option>
-                        <option value="4"> FRACCION lV. Permiso pormotivos personales</option>
-                        <option value="5"> FRACCION V. Permiso economico durante bel ciclo escolar</option>
-                        <option value="6"> FRACCION Vl. Permiso o licencia para asisteir a seminarios, foros, congresos
-                        </option>
+                        <option value="1"> FRACCION l. Incapacidad médica (IMSS)</option>
+                        <option value="2"> FRACCION ll. Permiso 4 días hábiles con goce de salario</option>
+                        <option value="3"> FRACCION lll. Permiso 8 dias hábiles con goce de salario</option>
+                        <option value="4"> FRACCION lV. Permiso por motivos personales</option>
+                        <option value="5"> FRACCION V. Permiso ecónomico durante bel ciclo escolar</option>
+                        <option value="6"> FRACCION Vl. Permiso o licencia para asistir a seminarios, foros, congresos</option>
                         <option value="7"> Otro motivo</option>
                     </select>
                 </div>
