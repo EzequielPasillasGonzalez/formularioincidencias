@@ -1,7 +1,8 @@
 <template>
     <div class="container">
+        <h1>Sistema de Permisos para docentes</h1>
         <div class="row">
-            <form action="" id="docentes">
+            <!-- <form action="" id="docentes">
                 <div class="col m12 card-panel">
                     <div class="col m4">
                         <label>Codigo: </label>
@@ -98,6 +99,77 @@
                 <div>
                     <button type="button" @click="enviarFormulario"> Enviar </button>
                 </div>
+            </form> -->
+
+            <form id="myForm">
+                <div>
+                    <label for="codigo">Codigo:</label>
+                    <input type="text" id="codigo" name="codigo" v-model="codigo" />
+                </div>
+                <div>
+                    <label for="tipoPermiso">Tipo de Permiso:</label>
+                    <select id="tipoPermiso" name="permiso" v-model="tipoPermiso" @click="setValuesVoid">
+                        <option value="" selected></option>
+                        <option value="varios">Varios dias</option>
+                        <option value="uno">Un dia</option>
+                        <option value="horas">Unas horas</option>
+                    </select>
+                </div>
+                <div id="variosDias" v-if="tipoPermiso === 'varios'">
+                    <h3>Seleccione los dias del Permiso</h3>
+                    <div>
+                        <label for="fechaInicio">Fecha Inicio:</label>
+                        <input type="date" id="fechaInicio" name="fechaInicio" v-model="permiso.fechaInicio">
+                    </div>
+                    <div>
+                        <label for="fechaFin">Fecha Fin:</label>
+                        <input type="date" id="fechaFin" name="fechaFin" v-model="permiso.fechaFin">
+                    </div>
+                </div>
+                <div id="unDia" v-if="tipoPermiso === 'uno'">
+                    <h3>Seleccione el Dia del Permiso</h3>
+                    <div>
+                        <label for="fechaPermiso">Fecha de permiso:</label>
+                        <input type="date" id="fechaPermiso" name="fechaPermiso" v-model="permiso.fechaPermiso">
+                    </div>
+                </div>
+                <div id="variasHoras" v-if="tipoPermiso === 'horas'">
+                    <h3>Seleccione el dia y horario del Permiso</h3>
+                    <div>
+                        <label for="fechaPerHoras">Fecha de permiso:</label>
+                        <input type="date" id="fechaPerHoras" name="fechaPerHoras" v-model="permiso.fechaPermiso">
+                    </div>
+                    <div>
+                        <label for="horarioInicio">Horario Inicio:</label>
+                        <input type="time" id="horarioInicio" name="horarioInicio" v-model="permiso.horarioInicio">
+                    </div>
+                    <div>
+                        <label for="horarioFin">Horario Fin:</label>
+                        <input type="time" id="horarioFin" name="horarioFin" v-model="permiso.horarioFin">
+                    </div>
+                </div> <br>
+                <div id="motivoPermiso">
+                    <label for="horas">Motivo del Permiso: </label>
+                    <select name="horas" id="horas" v-model="idMotivo">
+                        <option value="1"> FRACCION l. Incapacidad medica (IMSS)</option>
+                        <option value="2"> FRACCION ll. Permiso 4 dias con goce de salario</option>
+                        <option value="3"> FRACCION lll. Permiso 8 dias habiles con goce de salario</option>
+                        <option value="4"> FRACCION lV. Permiso pormotivos personales</option>
+                        <option value="5"> FRACCION V. Permiso economico durante bel ciclo escolar</option>
+                        <option value="6"> FRACCION Vl. Permiso o licencia para asisteir a seminarios, foros, congresos
+                        </option>
+                        <option value="7"> Otro motivo</option>
+                    </select>
+                </div>
+
+                <div v-if="idMotivo === '7'">
+                    <label for="otroMotivo">Escribe el motivo del permiso: </label>
+                    <textarea name="" id="" cols="0" rows="5"  v-model="FraClausula"></textarea>
+                </div>
+
+                <div>
+                    <input type="button" value="Enviar" @click="enviarFormulario">
+                </div>
             </form>
         </div>
     </div>
@@ -110,7 +182,6 @@ import Swal from 'sweetalert2'
 import userForm from '@/composable/userForm.js'
 
 export default {
-
     setup() {
 
         let codigo = ref('')
@@ -118,26 +189,23 @@ export default {
         let FraClausula = ref('')
         let tipoPermiso = ref('')
         let masDias = ref(false)
-        let permiso = ({
+        const permiso = ref({
             fechaPermiso: '',
             horarioInicio: '',
             horarioFin: '',
-            masdiasPermiso: ''
-        })
-        const nombre = ref('Ezequiel')
-        const plaza = ref('Estudiante')
+            masdiasPermiso: '',
+            fechaInicio: '',
+            fechaFin: '',
+        })        
 
-
-
-        const setMasDiasFalse = () => {
-            masDias.value = false
-            permiso.masdiasPermiso = ''
-        }
-
-        const setHorasFalse = () => {
-            permiso.horarioInicio = ''
-            permiso.horarioFin = ''
-        }
+        const setValuesVoid = () => {
+            permiso.value.fechaPermiso = ''
+            permiso.value.horarioFin = ''
+            permiso.value.horarioInicio = ''
+            permiso.value.masdiasPermiso = ''
+            permiso.value.fechaFin = ''
+            permiso.value.fechaInicio = ''
+        };
 
         const { generarPDF } = userForm()
 
@@ -146,19 +214,22 @@ export default {
             try {
                 if (idMotivo.value !== '7') {
                     FraClausula.value = ''
-
                 }
 
-                if (!nombre.value || !plaza.value || !codigo.value || !idMotivo.value || !permiso) {
+
+
+
+                // Simulamos la peticion a los archivos CSV para consulta informacion del usuario
+                const nombre = 'Ezequiel'
+                const plaza = 'Estudiante'
+
+                if (!nombre || !plaza || !codigo.value || !idMotivo.value || !permiso.value) {
                     return Swal.fire('Error', 'No pueden ir datos vacios', 'error')
                 }
 
 
-                // Simulamos la peticion a los archivos CSV para consulta informacion del usuario
-
-
                 // Hacemos envio de datos a la api para generarPDF           
-                const { ok, body } = await generarPDF(nombre.value, plaza.value, codigo.value, idMotivo.value, FraClausula.value, permiso, tipoPermiso.value, masDias.value)
+                const { ok, body } = await generarPDF(nombre, plaza, codigo.value, idMotivo.value, FraClausula.value, permiso.value, tipoPermiso.value, masDias.value)
 
                 if (!ok) {
                     return Swal.fire('Error', 'Revisa bien los datos proporcionados', 'error')
@@ -192,10 +263,9 @@ export default {
             permiso,
 
 
-            //Funciones
-            setMasDiasFalse,
-            setHorasFalse,
-            enviarFormulario
+            //Funciones            
+            enviarFormulario,
+            setValuesVoid
         }
     }
 
