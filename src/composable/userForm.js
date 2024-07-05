@@ -10,7 +10,7 @@ const userForm = () => {
                 return 'no hay permiso'
             }
 
-            idMotivo = parseInt(idMotivo)
+            idMotivo = parseInt(idMotivo)            
 
             let fechaPermiso = ''
 
@@ -27,7 +27,7 @@ const userForm = () => {
                 return new Error('No hay un tipo de permiso seleccionado');
             }
 
-            const { data } = await awsApi.post('/generatefile/pdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso })
+            const data = await awsApi.post('/generatePDF', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso })                        
 
             return data
         } catch (error) {

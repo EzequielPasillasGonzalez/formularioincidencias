@@ -228,10 +228,11 @@ export default {
 
 
                 // Hacemos envio de datos a la api para generarPDF           
-                const { ok, body } = await generarPDF(nombre, plaza, codigo.value, idMotivo.value, FraClausula.value, permiso.value, tipoPermiso.value, masDias.value)
+                const resp = await generarPDF(nombre, plaza, codigo.value, idMotivo.value, FraClausula.value, permiso.value, tipoPermiso.value, masDias.value)
 
+                const {ok, body} = resp
                 if (!ok) {
-                    return Swal.fire('Error', 'Revisa bien los datos proporcionados', 'error')
+                    return Swal.fire('Error', `Revisa bien los datos proporcionados ${resp}`, 'error')
                 }
 
 
@@ -239,13 +240,6 @@ export default {
             } catch (error) {
                 return Swal.fire('Error', error.message, 'error')
             }
-
-
-
-
-
-
-
         }
 
 
