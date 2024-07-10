@@ -27,8 +27,18 @@ const userForm = () => {
                 return new Error('No hay un tipo de permiso seleccionado');
             }
 
-            const data = await awsApi.post('/generatePDF', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso })                        
+            const data = await awsApi.post('/file/generatePdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso })            
 
+            const dataGetUrl = await awsApi.post(`/file/getUrlFile?filename=${data.data.body.nombreTemp}`)               
+            
+            
+            await awsApi.post('/email/sendEmail', {
+                "toAddress": "ezequiel.pasillas@alumnos.udg.mx",
+                "subject": "Solicitud de incidencia",
+                "url": `${dataGetUrl.data.body}`
+            })   
+
+            
             return data
         } catch (error) {
             return new Error(error.message)
