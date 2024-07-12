@@ -2,7 +2,13 @@
     <div class="container">
         <h1>Sistema de Permisos para docentes</h1>
         <div class="row">
-            <form id="myForm">
+            <form id="myForm" @submit.prevent="submitForm">
+                <div>
+                    <label for="codigo">Codigo:</label>
+                    <input type="text" id="codigo" name="codigo" v-model="codigo"  @input="validateInput" required>
+                    <span class="error" v-if="errorMessage">{{ errorMessage }}</span>
+                </div>
+                </form id="myForm">
                 <div>
                     <label for="codigo">Codigo:</label>
                     <input type="text" id="codigo" name="codigo" v-model="codigo" />
@@ -74,8 +80,7 @@
 
                 <div>
                     <input type="button" value="Enviar" @click="enviarFormulario">
-                </div>
-            </form>
+                </div>            
         </div>
     </div>
 </template>
@@ -85,8 +90,35 @@ import { ref } from 'vue'
 
 import Swal from 'sweetalert2'
 import userForm from '@/composable/userForm.js'
+ 
 
 export default {
+
+    data(){
+                return {
+                    //codigo: '',
+                    errorMessage: ''
+            };
+        },
+
+    methods: {
+        validateInput(){
+            const regex = /^\d*$/;
+            if (!regex.test(this.codigo)) {
+            this.errorMessage = 'Solo se permiten números.';
+            this.codigo = this.codigo.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
+            } else {
+            this.errorMessage = '';
+            }
+        }
+    },
+
+        enviarFormulario(){
+            if (!/^\d+$/.test(this.codigo)) {
+            alert('Por favor, ingrese solo números.');
+            }
+        },
+
     setup() {
 
         let codigo = ref('')
@@ -390,18 +422,20 @@ export default {
             tipoPermiso,
             masDias,
             permiso,
+            formateadas,
+            submitted,
+            formatDate,
+ 
+            
 
 
             //Funciones            
             enviarFormulario,
-            setValuesVoid,
+            setValuesVoid,            
             obtenerDiaDeLaFecha,
             obtenerDiaDeLaFechaFin,
             obtenerDiaDeLaFechaPermiso
         }
+
     }
-
 }
-</script>
-
-<style lang='scss' scoped></style>
