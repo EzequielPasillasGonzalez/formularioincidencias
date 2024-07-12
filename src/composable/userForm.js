@@ -2,7 +2,10 @@ import awsApi from '@/api/awsApi.js'
 
 
 const userForm = () => {
-
+    const formatDate = (fecha) => {        
+        const [yyyy, mm, dd] = fecha.split('-');
+        return `${dd}/${mm}/${yyyy}`;        
+    }  
 
     const generarPDF = async (nombre, plaza, codigo, idMotivo, FraClausula, permiso, tipoPermiso, correo, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes) => {
 
@@ -18,11 +21,22 @@ const userForm = () => {
 
             if (tipoPermiso === 'varios' && permiso.fechaInicio && permiso.fechaFin) {
 
+                permiso.fechaInicio = formatDate(permiso.fechaInicio)
+                permiso.fechaFin = formatDate(permiso.fechaFin)
+
+                console.log(permiso.fechaInicio);
+                console.log(permiso.fechaFin);
+                
+
                 fechaPermiso = `${permiso.fechaInicio} a ${permiso.fechaFin}`
 
             } else if (tipoPermiso === 'uno' && permiso.fechaPermiso) {
+                permiso.fechaPermiso = formatDate(permiso.fechaPermiso)
+                console.log(permiso.fechaPermiso);
                 fechaPermiso = `${permiso.fechaPermiso} por todo el día`
             } else if (tipoPermiso === 'horas' && permiso.fechaPermiso && permiso.horarioInicio && permiso.horarioFin) {
+                permiso.fechaPermiso = formatDate(permiso.fechaPermiso)
+                console.log(permiso.fechaPermiso);
                 fechaPermiso = `${permiso.fechaPermiso} de ${permiso.horarioInicio} a ${permiso.horarioFin}`
             } else {
                 return new Error('No hay un tipo de permiso seleccionado');

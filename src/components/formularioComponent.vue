@@ -1,18 +1,13 @@
 <template>
     <div class="container">
         <h1>Sistema de Permisos para docentes</h1>
-        <div class="row">
-            <form id="myForm" @submit.prevent="submitForm">
-                <div>
+        <div class="row">                                          
+                <form id="myForm" >
+                    <div>
                     <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo"  @input="validateInput" required>
-                    <span class="error" v-if="errorMessage">{{ errorMessage }}</span>
-                </div>
-                </form id="myForm">
-                <div>
-                    <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo" />
-                </div>
+                    <input type="text" id="codigo" name="codigo" v-model="codigo"  @change="validateInput" required>
+                    <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
+                </div>  
                 <div>
                     <label for="tipoPermiso">Tipo de Permiso:</label>
                     <select id="tipoPermiso" name="permiso" v-model="tipoPermiso" @click="setValuesVoid">
@@ -80,7 +75,8 @@
 
                 <div>
                     <input type="button" value="Enviar" @click="enviarFormulario">
-                </div>            
+                </div>
+            </form>           
         </div>
     </div>
 </template>
@@ -93,34 +89,11 @@ import userForm from '@/composable/userForm.js'
  
 
 export default {
-
-    data(){
-                return {
-                    //codigo: '',
-                    errorMessage: ''
-            };
-        },
-
-    methods: {
-        validateInput(){
-            const regex = /^\d*$/;
-            if (!regex.test(this.codigo)) {
-            this.errorMessage = 'Solo se permiten números.';
-            this.codigo = this.codigo.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
-            } else {
-            this.errorMessage = '';
-            }
-        }
-    },
-
-        enviarFormulario(){
-            if (!/^\d+$/.test(this.codigo)) {
-            alert('Por favor, ingrese solo números.');
-            }
-        },
+            
 
     setup() {
 
+        let errorMessage = ref('')
         let codigo = ref('')
         let idMotivo = ref('')
         let FraClausula = ref('')
@@ -137,7 +110,26 @@ export default {
             fechaInicio: '',
             fechaFin: '',
         })
+        
         const diasSemana = ref(['L', 'M', 'X', 'J', 'V', 'S', 'D']);
+
+
+        const validarNumeros = () => {
+            if (!/^\d+$/.test(codigo.value)) {
+            alert('Por favor, ingrese solo números.');
+            }
+        }
+
+
+        const validateInput = () => {
+            const regex = /^\d*$/;
+            if (!regex.test(codigo.value)) {
+            errorMessage.value = 'Solo se permiten números.';
+            codigo.value = codigo.value.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
+            } else {
+            errorMessage.value = '';
+            }
+        }
 
         const setValuesVoid = () => {
             permiso.value.fechaPermiso = ''
@@ -269,6 +261,8 @@ export default {
                 }
             });
         };
+
+            
 
 
         const { generarPDF, obtenerDatosProfesores, obtenerDataASignacion, processAsignaturas, processCrnAsignaturas, obtenerFirmantes } = userForm()
@@ -421,10 +415,8 @@ export default {
             FraClausula,
             tipoPermiso,
             masDias,
-            permiso,
-            formateadas,
-            submitted,
-            formatDate,
+            permiso,                            
+            errorMessage,
  
             
 
@@ -434,8 +426,13 @@ export default {
             setValuesVoid,            
             obtenerDiaDeLaFecha,
             obtenerDiaDeLaFechaFin,
-            obtenerDiaDeLaFechaPermiso
+            obtenerDiaDeLaFechaPermiso,
+            validateInput,
+            validarNumeros
         }
 
     }
 }
+</script>
+
+<style lang='scss' scoped></style>
