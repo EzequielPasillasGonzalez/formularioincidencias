@@ -5,7 +5,7 @@
             <form id="myForm">
                 <div>
                     <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo" @change="validateInput" required>
+                    <input type="text" id="codigo" name="codigo" v-model="codigo" @input="validateInput" required>
                     <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
                 </div>
                 <div>
@@ -94,6 +94,8 @@ export default {
 
     setup() {
 
+        
+
         let errorMessage = ref('')
         let codigo = ref('')
         let idMotivo = ref('')
@@ -164,6 +166,8 @@ export default {
             }
         }
 
+        
+
         const setValuesVoid = () => {
             permiso.value.fechaPermiso = ''
             permiso.value.horarioFin = ''
@@ -221,14 +225,14 @@ export default {
             } else {
                 // Ajustar el cálculo de diffToMonday basado en la suposición de que 0 es domingo y 1 es lunes                
                 diffToMonday = (day === 0 ? -6 : 0) - day;
-                console.log(diffToMonday);
+                
             }
 
             const startOfWeek = new Date(date);
             startOfWeek.setDate(date.getDate() + diffToMonday);
 
             const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setDate(startOfWeek.getDate() + 5);            
 
             return {
                 startOfWeek: startOfWeek.toISOString().split('T')[0],
@@ -465,6 +469,8 @@ export default {
                 let cantidadSemanas
                 if (esDiferenteSemana.value == true) {
                     cantidadSemanas = getAllWeeksBetweenDates(permiso.value.fechaInicio, permiso.value.fechaFin)
+                    console.log(cantidadSemanas);
+                    return
                 } else {
                     cantidadSemanas = []
                 }
