@@ -1,13 +1,13 @@
 <template>
     <div class="container">
         <h1>Sistema de Permisos para docentes</h1>
-        <div class="row">                                          
-                <form id="myForm" >
-                    <div>
+        <div class="row">
+            <form id="myForm">
+                <div>
                     <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo"  @change="validateInput" required>
+                    <input type="text" id="codigo" name="codigo" v-model="codigo" @change="validateInput" required>
                     <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
-                </div>  
+                </div>
                 <div>
                     <label for="tipoPermiso">Tipo de Permiso:</label>
                     <select id="tipoPermiso" name="permiso" v-model="tipoPermiso" @click="setValuesVoid">
@@ -76,7 +76,7 @@
                 <div>
                     <input type="button" value="Enviar" @click="enviarFormulario">
                 </div>
-            </form>           
+            </form>
         </div>
     </div>
 </template>
@@ -86,10 +86,11 @@ import { ref } from 'vue'
 
 import Swal from 'sweetalert2'
 import userForm from '@/composable/userForm.js'
- 
+import validacionesFecha from '@/helpers/validacionesFecha';
+
 
 export default {
-            
+
 
     setup() {
 
@@ -109,25 +110,57 @@ export default {
             diaDeLaSemanaPermiso: '',
             fechaInicio: '',
             fechaFin: '',
+            viejaFin: '',
         })
-        
         const diasSemana = ref(['L', 'M', 'X', 'J', 'V', 'S', 'D']);
+        let esDiferenteSemana = ref(false)
 
 
         const validarNumeros = () => {
             if (!/^\d+$/.test(codigo.value)) {
-            alert('Por favor, ingrese solo números.');
+                alert('Por favor, ingrese solo números.');
             }
         }
+
+        const getWeekNumber = (date) => {
+            const startOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - startOfYear) / 86400000;
+
+            // 1st Jan is considered as week 1
+            return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        };
+
+        const verificarSemana = () => {
+            if (permiso.value.fechaInicio && permiso.value.fechaFin) {
+                const inicio = new Date(permiso.value.fechaInicio);
+                const fin = new Date(permiso.value.fechaFin);
+
+                if (isSameWeek(inicio, fin)) {
+                    esDiferenteSemana.value = false
+                } else {
+                    esDiferenteSemana.value = true
+                }
+            }
+        };
+
+        const isSameWeek = (date1, date2) => {
+            const week1 = getWeekNumber(new Date(date1));
+            const week2 = getWeekNumber(new Date(date2));
+
+            const year1 = new Date(date1).getFullYear();
+            const year2 = new Date(date2).getFullYear();
+
+            return week1 === week2 && year1 === year2;
+        };
 
 
         const validateInput = () => {
             const regex = /^\d*$/;
             if (!regex.test(codigo.value)) {
-            errorMessage.value = 'Solo se permiten números.';
-            codigo.value = codigo.value.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
+                errorMessage.value = 'Solo se permiten números.';
+                codigo.value = codigo.value.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
             } else {
-            errorMessage.value = '';
+                errorMessage.value = '';
             }
         }
 
@@ -176,6 +209,33 @@ export default {
 
             return result
         };
+
+        const getStartAndEndOfWeek = (date) => {
+            date = new Date(date);
+            let day = date.getDay(); // Obtener el día de la semana (0 - Domingo, 1 - Lunes, ..., 6 - Sábado)            
+            let diffToMonday
+            if (day == 0) {
+                // Ajustar el cálculo de diffToMonday basado en la suposición de que 0 es domingo y 1 es lunes
+                diffToMonday = (day === 0 ? 0 : (day === 6 ? -5 : 1 - day));
+
+            } else {
+                // Ajustar el cálculo de diffToMonday basado en la suposición de que 0 es domingo y 1 es lunes                
+                diffToMonday = (day === 0 ? -6 : 0) - day;
+                console.log(diffToMonday);
+            }
+
+            const startOfWeek = new Date(date);
+            startOfWeek.setDate(date.getDate() + diffToMonday);
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+            return {
+                startOfWeek: startOfWeek.toISOString().split('T')[0],
+                endOfWeek: endOfWeek.toISOString().split('T')[0]
+            };
+        };
+
 
         const agregarDias = (diasDeLaSemanaPermiso) => {
             const diasSemanaArray = diasSemana.value;
@@ -251,21 +311,43 @@ export default {
         };
 
         const eliminarDuplicados = (array) => {
-            const seen = {};
+            const seen = new Set();
             return array.filter(item => {
-                if (seen[item.clave_asignatura]) {
+                const key = `${item.clave_asignatura}-${item.horaini_hhmm}-${item.horafin_hhmm}`;
+                if (seen.has(key)) {
                     return false;
                 } else {
-                    seen[item.clave_asignatura] = true;
+                    seen.add(key);
                     return true;
                 }
             });
         };
 
-            
+        const getAllWeeksBetweenDates = (startDate, endDate) => {
+            const weeks = [];
+            let currentStartDate = new Date(startDate);
+
+
+
+            while (currentStartDate <= new Date(endDate)) {
+
+                const week = getStartAndEndOfWeek(currentStartDate);
+
+                weeks.push(week);
+
+                // Avanzar al inicio de la próxima semana
+                currentStartDate.setDate(currentStartDate.getDate() + 7);
+            }
+
+            return weeks;
+        };
+
+
 
 
         const { generarPDF, obtenerDatosProfesores, obtenerDataASignacion, processAsignaturas, processCrnAsignaturas, obtenerFirmantes } = userForm()
+
+        const { permisoVariasSemanas } = validacionesFecha()
 
         const enviarFormulario = async () => {
 
@@ -340,6 +422,7 @@ export default {
                 let diasSolicitados = []
                 let datosCompletosMateria = []
                 let permisoVariosDias = []
+
                 switch (tipoPermiso.value) {
                     case 'uno':
                         diasSolicitados = validarDiasem(asignaturasHorario, permiso.value.diaDeLaSemanaPermiso);
@@ -359,33 +442,90 @@ export default {
                         permisoVariosDias = agregarDias(permisoVariosDias)
                         permisoVariosDias = validarVariosDiasem(asignaturasHorario, permisoVariosDias)
                         datosCompletosMateria = extraerNombreMateria(asignaturasNombre, permisoVariosDias)
+                        verificarSemana()
+
                         break;
 
                     default:
                         break;
                 }
 
+                if (datosCompletosMateria.length == 0) {
+                    return Swal.fire({
+                        icon: 'info',
+                        title: 'Atención',
+                        text: 'La incidencia no pudo ser generada debido a que no se tienen actividades en las fechas/horas seleccionadas. Favor de verificar.',
+
+                    });
+                }
+
 
                 const firmantes = await obtenerFirmantes()
 
+                let cantidadSemanas
+                if (esDiferenteSemana.value == true) {
+                    cantidadSemanas = getAllWeeksBetweenDates(permiso.value.fechaInicio, permiso.value.fechaFin)
+                } else {
+                    cantidadSemanas = []
+                }
 
 
 
-                // Hacemos envio de datos a la api para generarPDF           
-                const resp = await generarPDF(
-                    nombre,
-                    plaza,
-                    codigo.value,
-                    idMotivo.value,
-                    FraClausula.value,
-                    permiso.value,
-                    tipoPermiso.value,
-                    correo,
-                    adsqcripcion,
-                    diasSolicitados,
-                    datosCompletosMateria,
-                    firmantes
-                )
+
+
+
+
+                // Hacemos envio de datos a la api para generarPDF  
+                let resp
+                if (cantidadSemanas.length > 0) {
+                    permiso.value.viejaFin = permiso.value.fechaFin                    
+                    for (let i = 0; i < cantidadSemanas.length; i++) {
+
+                        let { nuevoPermiso,
+                            nuevotipoPermiso } = await permisoVariasSemanas(i, permiso.value, cantidadSemanas, tipoPermiso.value)
+
+                            console.log(nuevoPermiso);
+                            console.log(nuevotipoPermiso);
+
+                        resp = await generarPDF(
+                            nombre,
+                            plaza,
+                            codigo.value,
+                            idMotivo.value,
+                            FraClausula.value,
+                            nuevoPermiso,
+                            nuevotipoPermiso,
+                            correo,
+                            adsqcripcion,
+                            diasSolicitados,
+                            datosCompletosMateria,
+                            firmantes
+                        );
+                    }
+
+                } else {
+                    // Caso cuando no hay semanas en cantidadSemanas
+                    resp = await generarPDF(
+                        nombre,
+                        plaza,
+                        codigo.value,
+                        idMotivo.value,
+                        FraClausula.value,
+                        permiso.value,
+                        tipoPermiso.value,
+                        correo,
+                        adsqcripcion,
+                        diasSolicitados,
+                        datosCompletosMateria,
+                        firmantes
+                    );
+
+                    // Manejar la respuesta si es necesario
+                    if (resp.error) {
+                        console.error(`Error al generar el PDF:`, resp.error);
+                    }
+                }
+
 
                 const { data } = resp
 
@@ -397,7 +537,17 @@ export default {
                 }
 
                 // 
-                Swal.fire('Guardado', `Tu solicitud ha sido procesada con éxito ${data.body.nombreTemp}`, 'success')
+                Swal.fire({
+                    title: 'Guardado',
+                    text: 'El formato de incidencia está en tu correo: favor de imprimirlo, firmarlo y entregarlo al Departamento con los anexos necesarios en el plazo indicado en la normativa',
+                    icon: 'success',
+                    allowOutsideClick: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop) {
+                        location.reload();
+                    }
+                });
+
             } catch (error) {
                 return Swal.fire('Error', `Error inesperado ${error.message}`, 'error')
             }
@@ -415,15 +565,15 @@ export default {
             FraClausula,
             tipoPermiso,
             masDias,
-            permiso,                            
+            permiso,
             errorMessage,
- 
-            
+
+
 
 
             //Funciones            
             enviarFormulario,
-            setValuesVoid,            
+            setValuesVoid,
             obtenerDiaDeLaFecha,
             obtenerDiaDeLaFechaFin,
             obtenerDiaDeLaFechaPermiso,
