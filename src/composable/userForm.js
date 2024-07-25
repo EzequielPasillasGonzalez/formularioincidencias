@@ -1,11 +1,15 @@
 import awsApi from '@/api/awsApi.js'
+// import axios from 'axios';
 
 
 const userForm = () => {
-
+    const formatDate = (fecha) => {        
+        const [yyyy, mm, dd] = fecha.split('-');
+        return `${dd}/${mm}/${yyyy}`;        
+    }  
 
     const generarPDF = async (nombre, plaza, codigo, idMotivo, FraClausula, permiso, tipoPermiso, correo, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes) => {
-
+        
         try {
             if (!permiso) {
                 return 'no hay permiso'
@@ -13,16 +17,22 @@ const userForm = () => {
 
             idMotivo = parseInt(idMotivo)
 
-            let fechaPermiso = ''
+            let fechaPermiso = ''            
 
 
             if (tipoPermiso === 'varios' && permiso.fechaInicio && permiso.fechaFin) {
 
+                permiso.fechaInicio = formatDate(permiso.fechaInicio)
+                permiso.fechaFin = formatDate(permiso.fechaFin)                
+                
+
                 fechaPermiso = `${permiso.fechaInicio} a ${permiso.fechaFin}`
 
             } else if (tipoPermiso === 'uno' && permiso.fechaPermiso) {
+                permiso.fechaPermiso = formatDate(permiso.fechaPermiso)                
                 fechaPermiso = `${permiso.fechaPermiso} por todo el día`
             } else if (tipoPermiso === 'horas' && permiso.fechaPermiso && permiso.horarioInicio && permiso.horarioFin) {
+                permiso.fechaPermiso = formatDate(permiso.fechaPermiso)                
                 fechaPermiso = `${permiso.fechaPermiso} de ${permiso.horarioInicio} a ${permiso.horarioFin}`
             } else {
                 return new Error('No hay un tipo de permiso seleccionado');
@@ -30,8 +40,8 @@ const userForm = () => {
 
 
 
-            const data = await awsApi.post('/file/generatePdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes })
-            // const data = await axios.post('http://localhost:3000/api/generatefile/pdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes })
+            const data = await awsApi.post('/file/generatePdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes, tipoPermiso })
+            // const data = await axios.post('http://localhost:3000/api/generatefile/pdf', { nombre, plaza, codigo, idMotivo, FraClausula, fechaPermiso, adsqcripcion, diasSolicitados, datosCompletosMateria, firmantes, tipoPermiso })
 
             if(data.data.ok == false ){
                 throw new Error(`En este momento no se pueden hacer solicitudes, intentanlo mas tarde ${data.data.body}`)
@@ -46,7 +56,7 @@ const userForm = () => {
 
             const dataCorreo = await awsApi.post('/email/sendEmail', {
                 "toAddress": "ezequiel.pasillas@alumnos.udg.mx",
-                "subject": "Solicitud de incidencia",
+                "subject": "[Correo automático] Formato de incidencia",
                 "url": `${dataGetUrl.data.body}`
             })
 

@@ -1,67 +1,74 @@
 <template>
-    <div class="container">
-        <h1>Sistema de Permisos para docentes</h1>
-        <div class="row">
-            <form id="myForm" @submit.prevent="submitForm">
-                <div>
+    
+        <div :style="{ backgroundColor: '#0D1C4D', width: 'auto', height: '120px',  color: 'white', textAlign: 'center'}"> 
+            <img src="/img/cut.png" alt="cut" :style="{ width: '200px', height: '115px', float: 'left', marginLeft: '15px' }">
+            <img src="/img/udg.png" alt="udg" :style="{ width: '110px', height: '115px', float: 'right', marginRight: '15px' }">
+        </div>
+        <div :style="{ backgroundColor: '#3FA8B2', width: 'auto', height: '4px'}"> </div>
+        <div :style="{ backgroundColor: '#3B4976', width: 'auto', height: '70px',  color: 'white', textAlign: 'center'}"> 
+
+            <h1>Sistema de Permisos para docentes</h1>
+        </div>
+
+    <div class="container mt-5">
+        
+        <div  class="container d-flex justify-content-center align-items-center">
+            <form id="myForm" class="bg-light p-4 border rounded">
+                <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class="mb-4"> </div>
+                <div class="col-md-16">
                     <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo"  @input="validateInput" required>
-                    <span class="error" v-if="errorMessage">{{ errorMessage }}</span>
+                    <input type="text" id="codigo" name="codigo" class="form-control" v-model="codigo" @input="validateInput" required>
+                    <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
                 </div>
-                </form id="myForm">
-                <div>
-                    <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" v-model="codigo" />
-                </div>
-                <div>
+                <div class="col-md-16">
                     <label for="tipoPermiso">Tipo de Permiso:</label>
-                    <select id="tipoPermiso" name="permiso" v-model="tipoPermiso" @click="setValuesVoid">
+                    <select id="tipoPermiso" name="permiso" class="form-select" v-model="tipoPermiso" @click="setValuesVoid">
                         <option value="" selected></option>
                         <option value="varios">Varios dias</option>
                         <option value="uno">Un dia</option>
                         <option value="horas">Unas horas</option>
                     </select>
-                </div>
-                <div id="variosDias" v-if="tipoPermiso === 'varios'">
+                </div><br>
+                <div id="variosDias" v-if="tipoPermiso === 'varios'" class="col-md-16">
                     <h3>Seleccione los dias del Permiso</h3>
                     <div>
                         <label for="fechaInicio">Fecha Inicio:</label>
-                        <input type="date" @change="obtenerDiaDeLaFecha" id="fechaInicio" name="fechaInicio"
-                            v-model="permiso.fechaInicio">
+                        <input type="date" @change="obtenerDiaDeLaFecha" id="fechaInicio" name="fechaInicio" class="form-control"
+                            v-model="permiso.fechaInicio" >
                     </div>
                     <div>
                         <label for="fechaFin">Fecha Fin:</label>
-                        <input type="date" @change="obtenerDiaDeLaFechaFin" id="fechaFin" name="fechaFin"
+                        <input type="date" @change="obtenerDiaDeLaFechaFin" id="fechaFin" name="fechaFin" class="form-control"
                             v-model="permiso.fechaFin">
                     </div>
                 </div>
-                <div id="unDia" v-if="tipoPermiso === 'uno'">
+                <div id="unDia" v-if="tipoPermiso === 'uno'" class="col-md-16">
                     <h3>Seleccione el Dia del Permiso</h3>
                     <div>
                         <label for="fechaPermiso">Fecha de permiso:</label>
-                        <input type="date" id="fechaPermiso" @change="obtenerDiaDeLaFechaPermiso" name="fechaPermiso"
+                        <input type="date" id="fechaPermiso" @change="obtenerDiaDeLaFechaPermiso" name="fechaPermiso" class="form-control"
                             v-model="permiso.fechaPermiso">
                     </div>
                 </div>
-                <div id="variasHoras" v-if="tipoPermiso === 'horas'">
+                <div id="variasHoras" v-if="tipoPermiso === 'horas'" class="col-md-16">
                     <h3>Seleccione el dia y horario del Permiso</h3>
                     <div>
                         <label for="fechaPerHoras">Fecha de permiso:</label>
-                        <input type="date" id="fechaPerHoras" @change="obtenerDiaDeLaFechaPermiso" name="fechaPerHoras"
+                        <input type="date" id="fechaPerHoras" @change="obtenerDiaDeLaFechaPermiso" name="fechaPerHoras" class="form-control"
                             v-model="permiso.fechaPermiso">
                     </div>
                     <div>
                         <label for="horarioInicio">Horario Inicio:</label>
-                        <input type="time" id="horarioInicio" name="horarioInicio" v-model="permiso.horarioInicio">
+                        <input type="time" id="horarioInicio" name="horarioInicio" class="form-control" v-model="permiso.horarioInicio">
                     </div>
                     <div>
                         <label for="horarioFin">Horario Fin:</label>
-                        <input type="time" id="horarioFin" name="horarioFin" v-model="permiso.horarioFin">
+                        <input type="time" id="horarioFin" name="horarioFin" class="form-control" v-model="permiso.horarioFin">
                     </div>
                 </div> <br>
-                <div id="motivoPermiso">
+                <div id="motivoPermiso" class="col-md-16">
                     <label for="horas">Motivo del Permiso: </label>
-                    <select name="horas" id="horas" v-model="idMotivo">
+                    <select name="horas" id="horas" class="form-select" v-model="idMotivo">
                         <option value="1"> FRACCION l. Incapacidad médica (IMSS)</option>
                         <option value="2"> FRACCION ll. Permiso 4 días hábiles con goce de salario</option>
                         <option value="3"> FRACCION lll. Permiso 8 dias hábiles con goce de salario</option>
@@ -74,15 +81,17 @@
                 </div>
 
                 <div v-if="idMotivo === '7'">
-                    <label for="otroMotivo">Escribe el motivo del permiso: </label>
-                    <textarea name="" id="" cols="0" rows="5" v-model="FraClausula"></textarea>
-                </div>
+                    <label for="otroMotivo" class="form-label">Escribe el motivo del permiso: </label>
+                    <textarea name="" id="" cols="0" rows="5" v-model="FraClausula" class="form-control"></textarea>
+                </div> <br>
 
                 <div>
-                    <input type="button" value="Enviar" @click="enviarFormulario">
-                </div>            
+                    <input type="button" value="Enviar" @click="enviarFormulario" class="btn btn-outline-primary mb-4">
+                </div>
+                <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class=""></div>
+            </form>
+            </div>
         </div>
-    </div>
 </template>
 
 <script>
@@ -90,37 +99,17 @@ import { ref } from 'vue'
 
 import Swal from 'sweetalert2'
 import userForm from '@/composable/userForm.js'
- 
+import validacionesFecha from '@/helpers/validacionesFecha';
+
 
 export default {
 
-    data(){
-                return {
-                    //codigo: '',
-                    errorMessage: ''
-            };
-        },
-
-    methods: {
-        validateInput(){
-            const regex = /^\d*$/;
-            if (!regex.test(this.codigo)) {
-            this.errorMessage = 'Solo se permiten números.';
-            this.codigo = this.codigo.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
-            } else {
-            this.errorMessage = '';
-            }
-        }
-    },
-
-        enviarFormulario(){
-            if (!/^\d+$/.test(this.codigo)) {
-            alert('Por favor, ingrese solo números.');
-            }
-        },
 
     setup() {
 
+        
+
+        let errorMessage = ref('')
         let codigo = ref('')
         let idMotivo = ref('')
         let FraClausula = ref('')
@@ -136,8 +125,61 @@ export default {
             diaDeLaSemanaPermiso: '',
             fechaInicio: '',
             fechaFin: '',
+            viejaFin: '',
         })
         const diasSemana = ref(['L', 'M', 'X', 'J', 'V', 'S', 'D']);
+        let esDiferenteSemana = ref(false)
+
+
+        const validarNumeros = () => {
+            if (!/^\d+$/.test(codigo.value)) {
+                alert('Por favor, ingrese solo números.');
+            }
+        }
+
+        const getWeekNumber = (date) => {
+            const startOfYear = new Date(date.getFullYear(), 0, 1);
+            const pastDaysOfYear = (date - startOfYear) / 86400000;
+
+            // 1st Jan is considered as week 1
+            return Math.ceil((pastDaysOfYear + startOfYear.getDay() + 1) / 7);
+        };
+
+        const verificarSemana = () => {
+            if (permiso.value.fechaInicio && permiso.value.fechaFin) {
+                const inicio = new Date(permiso.value.fechaInicio);
+                const fin = new Date(permiso.value.fechaFin);
+
+                if (isSameWeek(inicio, fin)) {
+                    esDiferenteSemana.value = false
+                } else {
+                    esDiferenteSemana.value = true
+                }
+            }
+        };
+
+        const isSameWeek = (date1, date2) => {
+            const week1 = getWeekNumber(new Date(date1));
+            const week2 = getWeekNumber(new Date(date2));
+
+            const year1 = new Date(date1).getFullYear();
+            const year2 = new Date(date2).getFullYear();
+
+            return week1 === week2 && year1 === year2;
+        };
+
+
+        const validateInput = () => {
+            const regex = /^\d*$/;
+            if (!regex.test(codigo.value)) {
+                errorMessage.value = 'Solo se permiten números.';
+                codigo.value = codigo.value.replace(/\D/g, ''); // Eliminar cualquier carácter no numérico
+            } else {
+                errorMessage.value = '';
+            }
+        }
+
+        
 
         const setValuesVoid = () => {
             permiso.value.fechaPermiso = ''
@@ -184,6 +226,33 @@ export default {
 
             return result
         };
+
+        const getStartAndEndOfWeek = (date) => {
+            date = new Date(date);
+            let day = date.getDay(); // Obtener el día de la semana (0 - Domingo, 1 - Lunes, ..., 6 - Sábado)            
+            let diffToMonday
+            if (day == 0) {
+                // Ajustar el cálculo de diffToMonday basado en la suposición de que 0 es domingo y 1 es lunes
+                diffToMonday = (day === 0 ? 0 : (day === 6 ? -5 : 1 - day));
+
+            } else {
+                // Ajustar el cálculo de diffToMonday basado en la suposición de que 0 es domingo y 1 es lunes                
+                diffToMonday = (day === 0 ? -6 : 0) - day;
+                
+            }
+
+            const startOfWeek = new Date(date);
+            startOfWeek.setDate(date.getDate() + diffToMonday);
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 5);            
+
+            return {
+                startOfWeek: startOfWeek.toISOString().split('T')[0],
+                endOfWeek: endOfWeek.toISOString().split('T')[0]
+            };
+        };
+
 
         const agregarDias = (diasDeLaSemanaPermiso) => {
             const diasSemanaArray = diasSemana.value;
@@ -259,19 +328,43 @@ export default {
         };
 
         const eliminarDuplicados = (array) => {
-            const seen = {};
+            const seen = new Set();
             return array.filter(item => {
-                if (seen[item.clave_asignatura]) {
+                const key = `${item.clave_asignatura}-${item.horaini_hhmm}-${item.horafin_hhmm}`;
+                if (seen.has(key)) {
                     return false;
                 } else {
-                    seen[item.clave_asignatura] = true;
+                    seen.add(key);
                     return true;
                 }
             });
         };
 
+        const getAllWeeksBetweenDates = (startDate, endDate) => {
+            const weeks = [];
+            let currentStartDate = new Date(startDate);
+
+
+
+            while (currentStartDate <= new Date(endDate)) {
+
+                const week = getStartAndEndOfWeek(currentStartDate);
+
+                weeks.push(week);
+
+                // Avanzar al inicio de la próxima semana
+                currentStartDate.setDate(currentStartDate.getDate() + 7);
+            }
+
+            return weeks;
+        };
+
+
+
 
         const { generarPDF, obtenerDatosProfesores, obtenerDataASignacion, processAsignaturas, processCrnAsignaturas, obtenerFirmantes } = userForm()
+
+        const { permisoVariasSemanas } = validacionesFecha()
 
         const enviarFormulario = async () => {
 
@@ -346,6 +439,7 @@ export default {
                 let diasSolicitados = []
                 let datosCompletosMateria = []
                 let permisoVariosDias = []
+
                 switch (tipoPermiso.value) {
                     case 'uno':
                         diasSolicitados = validarDiasem(asignaturasHorario, permiso.value.diaDeLaSemanaPermiso);
@@ -365,33 +459,92 @@ export default {
                         permisoVariosDias = agregarDias(permisoVariosDias)
                         permisoVariosDias = validarVariosDiasem(asignaturasHorario, permisoVariosDias)
                         datosCompletosMateria = extraerNombreMateria(asignaturasNombre, permisoVariosDias)
+                        verificarSemana()
+
                         break;
 
                     default:
                         break;
                 }
 
+                if (datosCompletosMateria.length == 0) {
+                    return Swal.fire({
+                        icon: 'info',
+                        title: 'Atención',
+                        text: 'La incidencia no pudo ser generada debido a que no se tienen actividades en las fechas/horas seleccionadas. Favor de verificar.',
+
+                    });
+                }
+
 
                 const firmantes = await obtenerFirmantes()
 
+                let cantidadSemanas
+                if (esDiferenteSemana.value == true) {
+                    cantidadSemanas = getAllWeeksBetweenDates(permiso.value.fechaInicio, permiso.value.fechaFin)
+                    console.log(cantidadSemanas);
+                    return
+                } else {
+                    cantidadSemanas = []
+                }
 
 
 
-                // Hacemos envio de datos a la api para generarPDF           
-                const resp = await generarPDF(
-                    nombre,
-                    plaza,
-                    codigo.value,
-                    idMotivo.value,
-                    FraClausula.value,
-                    permiso.value,
-                    tipoPermiso.value,
-                    correo,
-                    adsqcripcion,
-                    diasSolicitados,
-                    datosCompletosMateria,
-                    firmantes
-                )
+
+
+
+
+                // Hacemos envio de datos a la api para generarPDF  
+                let resp
+                if (cantidadSemanas.length > 0) {
+                    permiso.value.viejaFin = permiso.value.fechaFin                    
+                    for (let i = 0; i < cantidadSemanas.length; i++) {
+
+                        let { nuevoPermiso,
+                            nuevotipoPermiso } = await permisoVariasSemanas(i, permiso.value, cantidadSemanas, tipoPermiso.value)
+
+                            console.log(nuevoPermiso);
+                            console.log(nuevotipoPermiso);
+
+                        resp = await generarPDF(
+                            nombre,
+                            plaza,
+                            codigo.value,
+                            idMotivo.value,
+                            FraClausula.value,
+                            nuevoPermiso,
+                            nuevotipoPermiso,
+                            correo,
+                            adsqcripcion,
+                            diasSolicitados,
+                            datosCompletosMateria,
+                            firmantes
+                        );
+                    }
+
+                } else {
+                    // Caso cuando no hay semanas en cantidadSemanas
+                    resp = await generarPDF(
+                        nombre,
+                        plaza,
+                        codigo.value,
+                        idMotivo.value,
+                        FraClausula.value,
+                        permiso.value,
+                        tipoPermiso.value,
+                        correo,
+                        adsqcripcion,
+                        diasSolicitados,
+                        datosCompletosMateria,
+                        firmantes
+                    );
+
+                    // Manejar la respuesta si es necesario
+                    if (resp.error) {
+                        console.error(`Error al generar el PDF:`, resp.error);
+                    }
+                }
+
 
                 const { data } = resp
 
@@ -403,7 +556,17 @@ export default {
                 }
 
                 // 
-                Swal.fire('Guardado', `Tu solicitud ha sido procesada con éxito ${data.body.nombreTemp}`, 'success')
+                Swal.fire({
+                    title: 'Guardado',
+                    text: 'El formato de incidencia está en tu correo: favor de imprimirlo, firmarlo y entregarlo al Departamento con los anexos necesarios en el plazo indicado en la normativa',
+                    icon: 'success',
+                    allowOutsideClick: true
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.backdrop) {
+                        location.reload();
+                    }
+                });
+
             } catch (error) {
                 return Swal.fire('Error', `Error inesperado ${error.message}`, 'error')
             }
@@ -422,20 +585,27 @@ export default {
             tipoPermiso,
             masDias,
             permiso,
-            formateadas,
-            submitted,
-            formatDate,
- 
-            
+            errorMessage,
+
+
 
 
             //Funciones            
             enviarFormulario,
-            setValuesVoid,            
+            setValuesVoid,
             obtenerDiaDeLaFecha,
             obtenerDiaDeLaFechaFin,
-            obtenerDiaDeLaFechaPermiso
+            obtenerDiaDeLaFechaPermiso,
+            validateInput,
+            validarNumeros
         }
 
     }
 }
+</script>
+
+<style lang='scss' scoped>
+
+
+
+</style>
