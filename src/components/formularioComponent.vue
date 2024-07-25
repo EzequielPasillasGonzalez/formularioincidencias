@@ -481,9 +481,7 @@ export default {
 
                 let cantidadSemanas
                 if (esDiferenteSemana.value == true) {
-                    cantidadSemanas = getAllWeeksBetweenDates(permiso.value.fechaInicio, permiso.value.fechaFin)
-                    console.log(cantidadSemanas);
-                    return
+                    cantidadSemanas = getAllWeeksBetweenDates(permiso.value.fechaInicio, permiso.value.fechaFin)                   
                 } else {
                     cantidadSemanas = []
                 }
@@ -497,14 +495,12 @@ export default {
                 // Hacemos envio de datos a la api para generarPDF  
                 let resp
                 if (cantidadSemanas.length > 0) {
+                    console.log(cantidadSemanas);
                     permiso.value.viejaFin = permiso.value.fechaFin                    
                     for (let i = 0; i < cantidadSemanas.length; i++) {
 
                         let { nuevoPermiso,
-                            nuevotipoPermiso } = await permisoVariasSemanas(i, permiso.value, cantidadSemanas, tipoPermiso.value)
-
-                            console.log(nuevoPermiso);
-                            console.log(nuevotipoPermiso);
+                            nuevotipoPermiso } = await permisoVariasSemanas(i, permiso.value, cantidadSemanas, tipoPermiso.value)                           
 
                         resp = await generarPDF(
                             nombre,
