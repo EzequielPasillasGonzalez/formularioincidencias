@@ -1,97 +1,97 @@
 <template>
     
-        <div :style="{ backgroundColor: '#0D1C4D', width: 'auto', height: '120px',  color: 'white', textAlign: 'center'}"> 
-            <img src="/img/cut.png" alt="cut" :style="{ width: '200px', height: '115px', float: 'left', marginLeft: '15px' }">
-            <img src="/img/udg.png" alt="udg" :style="{ width: '110px', height: '115px', float: 'right', marginRight: '15px' }">
-        </div>
-        <div :style="{ backgroundColor: '#3FA8B2', width: 'auto', height: '4px'}"> </div>
-        <div :style="{ backgroundColor: '#3B4976', width: 'auto', height: '70px',  color: 'white', textAlign: 'center'}"> 
+    <div :style="{ backgroundColor: '#0D1C4D', width: 'auto', height: '120px',  color: 'white', textAlign: 'center'}"> 
+        <img src="/img/cut.png" alt="cut" :style="{ width: '200px', height: '115px', float: 'left', marginLeft: '15px' }">
+        <img src="/img/udg.png" alt="udg" :style="{ width: '110px', height: '115px', float: 'right', marginRight: '15px' }">
+    </div>
+    <div :style="{ backgroundColor: '#3FA8B2', width: 'auto', height: '4px'}"> </div>
+    <div :style="{ backgroundColor: '#3B4976', width: 'auto', height: '70px',  color: 'white', textAlign: 'center'}"> 
 
-            <h1>Sistema de Permisos para docentes</h1>
-        </div>
+        <h1>Sistema de Permisos para docentes</h1>
+    </div>
 
-    <div class="container mt-5">
-        
-        <div  class="container d-flex justify-content-center align-items-center">
-            <form id="myForm" class="bg-light p-4 border rounded">
-                <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class="mb-4"> </div>
-                <div class="col-md-16">
-                    <label for="codigo">Codigo:</label>
-                    <input type="text" id="codigo" name="codigo" class="form-control" v-model="codigo" @input="validateInput" required>
-                    <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
-                </div>
-                <div class="col-md-16">
-                    <label for="tipoPermiso">Tipo de Permiso:</label>
-                    <select id="tipoPermiso" name="permiso" class="form-select" v-model="tipoPermiso" @click="setValuesVoid">
-                        <option value="" selected></option>
-                        <option value="varios">Varios dias</option>
-                        <option value="uno">Un dia</option>
-                        <option value="horas">Unas horas</option>
-                    </select>
-                </div><br>
-                <div id="variosDias" v-if="tipoPermiso === 'varios'" class="col-md-16">
-                    <h3>Seleccione los dias del Permiso</h3>
-                    <div>
-                        <label for="fechaInicio">Fecha Inicio:</label>
-                        <input type="date" @change="obtenerDiaDeLaFecha" id="fechaInicio" name="fechaInicio" class="form-control"
-                            v-model="permiso.fechaInicio" >
-                    </div>
-                    <div>
-                        <label for="fechaFin">Fecha Fin:</label>
-                        <input type="date" @change="obtenerDiaDeLaFechaFin" id="fechaFin" name="fechaFin" class="form-control"
-                            v-model="permiso.fechaFin">
-                    </div>
-                </div>
-                <div id="unDia" v-if="tipoPermiso === 'uno'" class="col-md-16">
-                    <h3>Seleccione el Dia del Permiso</h3>
-                    <div>
-                        <label for="fechaPermiso">Fecha de permiso:</label>
-                        <input type="date" id="fechaPermiso" @change="obtenerDiaDeLaFechaPermiso" name="fechaPermiso" class="form-control"
-                            v-model="permiso.fechaPermiso">
-                    </div>
-                </div>
-                <div id="variasHoras" v-if="tipoPermiso === 'horas'" class="col-md-16">
-                    <h3>Seleccione el dia y horario del Permiso</h3>
-                    <div>
-                        <label for="fechaPerHoras">Fecha de permiso:</label>
-                        <input type="date" id="fechaPerHoras" @change="obtenerDiaDeLaFechaPermiso" name="fechaPerHoras" class="form-control"
-                            v-model="permiso.fechaPermiso">
-                    </div>
-                    <div>
-                        <label for="horarioInicio">Horario Inicio:</label>
-                        <input type="time" id="horarioInicio" name="horarioInicio" class="form-control" v-model="permiso.horarioInicio">
-                    </div>
-                    <div>
-                        <label for="horarioFin">Horario Fin:</label>
-                        <input type="time" id="horarioFin" name="horarioFin" class="form-control" v-model="permiso.horarioFin">
-                    </div>
-                </div> <br>
-                <div id="motivoPermiso" class="col-md-16">
-                    <label for="horas">Motivo del Permiso: </label>
-                    <select name="horas" id="horas" class="form-select" v-model="idMotivo">
-                        <option value="1"> FRACCION l. Incapacidad médica (IMSS)</option>
-                        <option value="2"> FRACCION ll. Permiso 4 días hábiles con goce de salario</option>
-                        <option value="3"> FRACCION lll. Permiso 8 dias hábiles con goce de salario</option>
-                        <option value="4"> FRACCION lV. Permiso por motivos personales</option>
-                        <option value="5"> FRACCION V. Permiso ecónomico durante bel ciclo escolar</option>
-                        <option value="6"> FRACCION Vl. Permiso o licencia para asistir a seminarios, foros, congresos
-                        </option>
-                        <option value="7"> Otro motivo</option>
-                    </select>
-                </div>
-
-                <div v-if="idMotivo === '7'">
-                    <label for="otroMotivo" class="form-label">Escribe el motivo del permiso: </label>
-                    <textarea name="" id="" cols="0" rows="5" v-model="FraClausula" class="form-control"></textarea>
-                </div> <br>
-
-                <div>
-                    <input type="button" value="Enviar" @click="enviarFormulario" class="btn btn-outline-primary mb-4">
-                </div>
-                <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class=""></div>
-            </form>
+<div class="container mt-5">
+    
+    <div  class="container d-flex justify-content-center align-items-center">
+        <form id="myForm" class="bg-light p-4 border rounded">
+            <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class="mb-4"> </div>
+            <div class="col-md-16">
+                <label for="codigo">Codigo:</label>
+                <input type="text" id="codigo" name="codigo" class="form-control" v-model="codigo" @input="validateInput" required>
+                <p class="error" v-if="errorMessage" style="color:red ">{{ errorMessage }}</p>
             </div>
+            <div class="col-md-16">
+                <label for="tipoPermiso">Tipo de Permiso:</label>
+                <select id="tipoPermiso" name="permiso" class="form-select" v-model="tipoPermiso" @click="setValuesVoid">
+                    <option value="" selected></option>
+                    <option value="varios">Varios dias</option>
+                    <option value="uno">Un dia</option>
+                    <option value="horas">Unas horas</option>
+                </select>
+            </div><br>
+            <div id="variosDias" v-if="tipoPermiso === 'varios'" class="col-md-16">
+                <h3>Seleccione los dias del Permiso</h3>
+                <div>
+                    <label for="fechaInicio">Fecha Inicio:</label>
+                    <input type="date" @change="obtenerDiaDeLaFecha" id="fechaInicio" name="fechaInicio" class="form-control"
+                        v-model="permiso.fechaInicio" >
+                </div>
+                <div>
+                    <label for="fechaFin">Fecha Fin:</label>
+                    <input type="date" @change="obtenerDiaDeLaFechaFin" id="fechaFin" name="fechaFin" class="form-control"
+                        v-model="permiso.fechaFin">
+                </div>
+            </div>
+            <div id="unDia" v-if="tipoPermiso === 'uno'" class="col-md-16">
+                <h3>Seleccione el Dia del Permiso</h3>
+                <div>
+                    <label for="fechaPermiso">Fecha de permiso:</label>
+                    <input type="date" id="fechaPermiso" @change="obtenerDiaDeLaFechaPermiso" name="fechaPermiso" class="form-control"
+                        v-model="permiso.fechaPermiso">
+                </div>
+            </div>
+            <div id="variasHoras" v-if="tipoPermiso === 'horas'" class="col-md-16">
+                <h3>Seleccione el dia y horario del Permiso</h3>
+                <div>
+                    <label for="fechaPerHoras">Fecha de permiso:</label>
+                    <input type="date" id="fechaPerHoras" @change="obtenerDiaDeLaFechaPermiso" name="fechaPerHoras" class="form-control"
+                        v-model="permiso.fechaPermiso">
+                </div>
+                <div>
+                    <label for="horarioInicio">Horario Inicio:</label>
+                    <input type="time" id="horarioInicio" name="horarioInicio" class="form-control" v-model="permiso.horarioInicio">
+                </div>
+                <div>
+                    <label for="horarioFin">Horario Fin:</label>
+                    <input type="time" id="horarioFin" name="horarioFin" class="form-control" v-model="permiso.horarioFin">
+                </div>
+            </div> <br>
+            <div id="motivoPermiso" class="col-md-16">
+                <label for="horas">Motivo del Permiso: </label>
+                <select name="horas" id="horas" class="form-select" v-model="idMotivo">
+                    <option value="1"> FRACCION l. Incapacidad médica (IMSS)</option>
+                    <option value="2"> FRACCION ll. Permiso 4 días hábiles con goce de salario</option>
+                    <option value="3"> FRACCION lll. Permiso 8 dias hábiles con goce de salario</option>
+                    <option value="4"> FRACCION lV. Permiso por motivos personales</option>
+                    <option value="5"> FRACCION V. Permiso ecónomico durante bel ciclo escolar</option>
+                    <option value="6"> FRACCION Vl. Permiso o licencia para asistir a seminarios, foros, congresos
+                    </option>
+                    <option value="7"> Otro motivo</option>
+                </select>
+            </div>
+
+            <div v-if="idMotivo === '7'">
+                <label for="otroMotivo" class="form-label">Escribe el motivo del permiso: </label>
+                <textarea name="" id="" cols="0" rows="5" v-model="FraClausula" class="form-control"></textarea>
+            </div> <br>
+
+            <div>
+                <input type="button" value="Enviar" @click="enviarFormulario" class="btn btn-outline-primary mb-4">
+            </div>
+            <div :style="{ backgroundColor: '#B2903F', width: 'auto', height: '3px'}" class=""></div>
+        </form>
         </div>
+    </div>
 </template>
 
 <script>
@@ -604,8 +604,4 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
-
-
-
-</style>
+<style lang='scss' scoped></style>
