@@ -1,10 +1,11 @@
 const validacionesFecha = () => {
 
-    const permisoVariasSemanas = async (i, permiso, cantidadSemanas, tipoPermiso) => {
+    const permisoVariasSemanas = async (i, permiso, cantidadSemanas, tipoPermiso, fechaInicio) => {
         let nuevotipoPermiso
         if (i === 0) {
-            // Primera semana
-            permiso.fechaInicio = cantidadSemanas[i].startOfWeek;
+            // Primera semana            
+            
+            permiso.fechaInicio = fechaInicio;
             permiso.fechaFin = cantidadSemanas[i].endOfWeek;
 
             nuevotipoPermiso = tipoPermiso
