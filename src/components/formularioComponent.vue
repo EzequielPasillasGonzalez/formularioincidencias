@@ -313,7 +313,6 @@ export default {
             const diasSemanaArray = diasSemana.value;
             const inicio = diasSemana.value.indexOf(diasDeLaSemanaPermiso[0]);
             const fin = diasSemana.value.indexOf(diasDeLaSemanaPermiso[diasDeLaSemanaPermiso.length - 1]);
-console.log(inicio);
 
             let diasParaAgregar = [];
 
