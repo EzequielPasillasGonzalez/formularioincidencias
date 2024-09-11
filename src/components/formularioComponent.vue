@@ -37,29 +37,47 @@
                     <h3>Seleccione los dias del Permiso</h3>
                     <div>
                         <label for="fechaInicio">Fecha Inicio:</label>
-                        <input type="date" @change="obtenerDiaDeLaFecha" :min="setToday()" id="fechaInicio"
-                            name="fechaInicio" class="form-control" v-model="permiso.fechaInicio">
+                        <input type="date" @change="obtenerDiaDeLaFecha"
+                            @input="verificarSiEsDomingo(permiso.fechaInicio, 'fechaInicio')" :min="setToday()"
+                            id="fechaInicio" name="fechaInicio" class="form-control" v-model="permiso.fechaInicio">
+                        <p class="error" v-if="errorMessageDia.fechaInicio" style="color:red ">{{
+                            errorMessageDia.fechaInicio }}</p>
+
                     </div>
                     <div>
                         <label for="fechaFin">Fecha Fin:</label>
-                        <input type="date" @change="obtenerDiaDeLaFechaFin" :min="setMinDateFechaFin()" id="fechaFin"
-                            name="fechaFin" class="form-control" v-model="permiso.fechaFin">
+                        <input type="date" @change="obtenerDiaDeLaFechaFin"
+                            @input="verificarSiEsDomingo(permiso.fechaFin, 'fechaFin')" :min="setMinDateFechaFin()"
+                            id="fechaFin" name="fechaFin" class="form-control" v-model="permiso.fechaFin">
+                        <p class="error" v-if="errorMessageDia.fechaFin" style="color:red ">{{ errorMessageDia.fechaFin
+                            }}</p>
+
                     </div>
                 </div>
                 <div id="unDia" v-if="tipoPermiso === 'uno'" class="col-md-16">
                     <h3>Seleccione el Dia del Permiso</h3>
                     <div>
                         <label for="fechaPermiso">Fecha de permiso:</label>
-                        <input type="date" id="fechaPermiso" :min="setToday()" @change="obtenerDiaDeLaFechaPermiso"
-                            name="fechaPermiso" class="form-control" v-model="permiso.fechaPermiso">
+                        <input type="date" id="fechaPermiso" :min="setToday()"
+                            @input="verificarSiEsDomingo(permiso.fechaPermiso, 'fechaPermiso')"
+                            @change="obtenerDiaDeLaFechaPermiso" name="fechaPermiso" class="form-control"
+                            v-model="permiso.fechaPermiso">
+                        <p class="error" v-if="errorMessageDia.fechaPermiso" style="color:red ">{{
+                            errorMessageDia.fechaPermiso }}</p>
+
                     </div>
                 </div>
                 <div id="variasHoras" v-if="tipoPermiso === 'horas'" class="col-md-16">
                     <h3>Seleccione el dia y horario del Permiso</h3>
                     <div>
                         <label for="fechaPerHoras">Fecha de permiso:</label>
-                        <input type="date" id="fechaPerHoras" :min="setToday()" @change="obtenerDiaDeLaFechaPermiso"
-                            name="fechaPerHoras" class="form-control" v-model="permiso.fechaPermiso">
+                        <input type="date" id="fechaPerHoras" :min="setToday()"
+                            @input="verificarSiEsDomingo(permiso.fechaPermiso, 'fechaPermiso')"
+                            @change="obtenerDiaDeLaFechaPermiso" name="fechaPerHoras" class="form-control"
+                            v-model="permiso.fechaPermiso">
+                        <p class="error" v-if="errorMessageDia.fechaPermiso" style="color:red ">{{
+                            errorMessageDia.fechaPermiso }}</p>
+
                     </div>
                     <div>
                         <label for="horarioInicio">Horario Inicio:</label>
@@ -116,6 +134,11 @@ export default {
 
 
         let errorMessage = ref('')
+        let errorMessageDia = ref({
+            fechaInicio: null,
+            fechaFin: null,
+            fechaPermiso: null,
+        })
         let codigo = ref('')
         let idMotivo = ref('')
         let FraClausula = ref('')
@@ -246,26 +269,58 @@ export default {
             permiso.value.diaDeLaSemanaInicio = ''
             permiso.value.diaDeLaSemanaFin = ''
             permiso.value.diaDeLaSemanaPermiso = ''
+            errorMessageDia.value = {
+                fechaInicio: null,
+                fechaFin: null,
+                fechaPermiso: null,
+            }
         };
 
         const obtenerDiaDeLaFecha = () => {
             if (permiso.value.fechaInicio) {
-                const fecha = new Date(permiso.value.fechaInicio);
-                permiso.value.diaDeLaSemanaInicio = diasSemana.value[fecha.getDay()];
+                let fecha = new Date(permiso.value.fechaInicio);
+                // fecha = verificarSiEsDomingo(fecha)
+                if (fecha != null) {
+                    permiso.value.diaDeLaSemanaInicio = diasSemana.value[fecha.getDay()];
+                }
+
             }
         }
 
         const obtenerDiaDeLaFechaPermiso = () => {
             if (permiso.value.fechaPermiso) {
-                const fecha = new Date(permiso.value.fechaPermiso);
-                permiso.value.diaDeLaSemanaPermiso = diasSemana.value[fecha.getDay()];
+                let fecha = new Date(permiso.value.fechaPermiso);
+                // fecha = verificarSiEsDomingo(fecha)
+                if (fecha != null) {
+                    permiso.value.diaDeLaSemanaPermiso = diasSemana.value[fecha.getDay()];
+                }
+
+            }
+        }
+
+        const verificarSiEsDomingo = (verificarDia, campo) => {
+            let fecha = new Date(verificarDia);
+            const diaDeLaSemana = fecha.getUTCDay(); // 0 es domingo, 6 es sábado
+
+            if (diaDeLaSemana === 0) {
+                errorMessageDia.value[campo] = 'No se puede elegir los domingos';
+                permiso.value[campo] = null
+                return
+            } else {
+                errorMessageDia.value[campo] = null
+                permiso.value[campo] = verificarDia
+                return
             }
         }
 
         const obtenerDiaDeLaFechaFin = () => {
             if (permiso.value.fechaFin) {
-                const fecha = new Date(permiso.value.fechaFin);
-                permiso.value.diaDeLaSemanaFin = diasSemana.value[fecha.getDay()];
+                let fecha = new Date(permiso.value.fechaFin);
+                // fecha = verificarSiEsDomingo(fecha)
+                if (fecha != null) {
+                    permiso.value.diaDeLaSemanaFin = diasSemana.value[fecha.getDay()];
+                }
+
             }
         }
 
@@ -318,18 +373,18 @@ export default {
 
             if (inicio !== -1 && fin !== -1) {
                 if (fin > inicio) {
-                    diasParaAgregar = diasSemanaArray.slice(inicio + 1, fin);                    
-                    
+                    diasParaAgregar = diasSemanaArray.slice(inicio + 1, fin);
+
                 } else {
                     diasParaAgregar = diasSemanaArray.slice(inicio + 1).concat(diasSemanaArray.slice(0, fin));
-                                        
+
                 }
             }
-            
+
 
             diasDeLaSemanaPermiso.push(...diasParaAgregar);
 
-            
+
 
             return diasDeLaSemanaPermiso;
         };
@@ -375,7 +430,7 @@ export default {
                 const finMateria = materia.horafin_hhmm
                 const inicioUsuario = permiso.value.horarioInicio
                 let finUsuario = permiso.value.horarioFin
-                
+
                 console.log(finUsuario);
 
                 // Convertir la hora seleccionada en un objeto Date
@@ -544,7 +599,7 @@ export default {
 
                     default:
                         break;
-                }                
+                }
 
                 if (datosCompletosMateria.length == 0) {
                     return Swal.fire({
@@ -664,6 +719,7 @@ export default {
             masDias,
             permiso,
             errorMessage,
+            errorMessageDia,
 
 
 
@@ -679,6 +735,7 @@ export default {
             adjustTime,
             setToday,
             setMinDateFechaFin,
+            verificarSiEsDomingo,
         }
 
     }

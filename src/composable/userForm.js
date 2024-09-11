@@ -52,11 +52,10 @@ const userForm = () => {
             if(dataGetUrl.data.ok == false ){
                 throw new Error(`En este momento no se pueden hacer solicitudes, intentanlo mas tarde ${dataGetUrl.data.body}`)
             }
-
-            console.log(correo);
+            
 
             const dataCorreo = await awsApi.post('/email/sendEmail', {
-                "toAddress": `johana.gomez8825@alumnos.udg.mx, ezequiel.pasillas@alumnos.udg.mx`,
+                "toAddress": `${correo}, johana.gomez8825@alumnos.udg.mx, ezequiel.pasillas@alumnos.udg.mx`,
                 "subject": "[Correo automático] Formato de incidencia",
                 "url": `${dataGetUrl.data.body}`
             })
